@@ -1,19 +1,31 @@
 %{
+/* Definition section */
 #include<stdio.h>
 #include<stdlib.h>
 %}
-%token A B
+
+%token A B NL
+
+/* Rule Section */
 %%
-input:s'\n' {printf("Successful Grammar\n");exit(0);}
-s: A s1 B| B s1: ; | A s1
+stmt: A A A A A S B NL {printf("valid string\n");
+			exit(0);}
+;
+S: S A
+|
+;
 %%
 
-main()
+int yyerror(char *msg)
 {
- printf("Enter A String\n"); yyparse();
+printf("invalid string\n");
+exit(0);
 }
 
-int yyerror()
+
+//driver code
+main()
 {
- printf("Unsuccessfull Grammar \n"); exit(0);
+printf("enter the string\n");
+yyparse();
 }
