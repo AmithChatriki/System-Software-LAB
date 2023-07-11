@@ -3,7 +3,6 @@
 
 void FIFO(char [ ],char [ ],int,int);
 void lru(char [ ],char [ ],int,int);
-void opt(char [ ],char [ ],int,int);
 
 int main()
 {
@@ -49,7 +48,7 @@ int main()
 void FIFO(char s[],char F[],int l,int f)
 {
     int i,j=0,k,flag=0,cnt=0;
-    printf("\n\tPAGE\t	FRAMES\t\t\t FAULTS");
+    printf("\n\tPAGE\t\t FAULTS");
     for(i=0;i<l;i++)
     {
         for(k=0;k<f;k++)
@@ -63,18 +62,13 @@ void FIFO(char s[],char F[],int l,int f)
             printf("\n\t%c\t",s[i]);
             F[j]=s[i];
             j++;
-            for(k=0;k<f;k++)
-                printf("	%c",F[k]);
             printf("\tPage-fault%d",cnt);
             cnt++;
         }
-
         else
         {
             flag=0;
             printf("\n\t%c\t",s[i]);
-            for(k=0;k<f;k++)
-                printf("	%c",F[k]);
             printf("\tNo page-fault");
         }
         if(j==f)
@@ -86,7 +80,7 @@ void FIFO(char s[],char F[],int l,int f)
 void lru(char s[],char F[],int l,int f)
 {
     int i,j=0,k,m,flag=0,cnt=0,top=0;
-    printf("\n\tPAGE\t	FRAMES\t\t\t FAULTS");
+    printf("\n\tPAGE\t\t FAULTS");
     for(i=0;i<l;i++)
     {
         for(k=0;k<f;k++)
@@ -105,7 +99,6 @@ void lru(char s[],char F[],int l,int f)
             if(j!=f)
                 top++;
         }
-
         else
         {
             if(flag!=1)
@@ -122,9 +115,6 @@ void lru(char s[],char F[],int l,int f)
                 F[top]=s[i];
             }
         }
-
-        for(k=0;k<f;k++)
-            printf("	%c",F[k]);
 
         if(flag==0)
         {
