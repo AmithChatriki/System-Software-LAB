@@ -1,128 +1,93 @@
-#include<stdio.h>
-#include<stdlib.h>
-
-void FIFO(char [ ],char [ ],int,int);
-void lru(char [ ],char [ ],int,int);
+#include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {
-    int ch,YN=1,i,l,f;
-    char F[10],s[25];
-    printf("\nEnter the no of empty frames: ");
-    scanf("%d",&f);
-    printf("\nEnter the length of the string: ");
-    scanf("%d",&l);
-    printf("\nEnter the string: ");
-    scanf("%s",s);
-    for(i=0;i<f;i++)
-        F[i]=-1;
+	 int Max[10][10], need[10][10], alloc[10][10], avail[10], completed[10], safeSequence[10];
+	 int p, r, i, j, process, count = 0;
+	 printf("Enter the no of processes : ");
+	 scanf("%d", &p);
+	 for(i = 0; i< p; i++)
+	  	completed[i] = 0;
+	 
+	 printf("\n\nEnter the no of resources : ");
+	 scanf("%d", &r);
+	 printf("\nEnter the Max Matrix for each process : ");
+	 for(i = 0; i < p; i++)
+	 {
+	  	printf("\nFor process %d : ", i + 1);
+	  	for(j = 0; j < r; j++)
+	   		scanf("%d", &Max[i][j]);
+	 }
+	 
+	 printf("\nEnter the allocation for each process : ");
+	 for(i = 0; i < p; i++)
+	 {
+	  	printf("\nFor process %d : ",i + 1);
+	  	for(j = 0; j < r; j++)
+	   		scanf("%d", &alloc[i][j]);
+	 }
+	 
+	 printf("\n\nEnter the Available Resources : ");
+	 for(i = 0; i < r; i++)
+	  	scanf("%d", &avail[i]);
+	 for(i = 0; i < p; i++)
+	  	for(j = 0; j < r; j++)
+	   		need[i][j] = Max[i][j] - alloc[i][j];
 
-    do
-    {
-        printf("\n*********** MENU ***********");
-        printf("\n1:FIFO\n2:LRU \n3:EXIT");
-        printf("\nEnter your choice: ");
-        scanf("%d",&ch);
-
-        switch(ch)
-        {
-            case 1: for(i=0;i<f;i++)
-                        F[i]=-1;
-                    FIFO(s,F,l,f);
-                    break;
-
-            case 2: for(i=0;i<f;i++)
-                        F[i]=-1;
-                    lru(s,F,l,f);
-                    break;
-
-            case 3: exit(0);
-        }
-        printf("\n\nDo u want to continue IF YES PRESS 1\nIF NO PRESS 0 : ");
-        scanf("%d",&YN);
-    } while(YN==1);
-    return(0);
-}
-
-//FIFO
-void FIFO(char s[],char F[],int l,int f)
-{
-    int i,j=0,k,flag=0,cnt=0;
-    printf("\n\tPAGE\t\t FAULTS");
-    for(i=0;i<l;i++)
-    {
-        for(k=0;k<f;k++)
-        {
-            if(F[k]==s[i])
-                flag=1;
-        }
-
-        if(flag==0)
-        {
-            printf("\n\t%c\t",s[i]);
-            F[j]=s[i];
-            j++;
-            printf("\tPage-fault%d",cnt);
-            cnt++;
-        }
-        else
-        {
-            flag=0;
-            printf("\n\t%c\t",s[i]);
-            printf("\tNo page-fault");
-        }
-        if(j==f)
-            j=0;
-    }
-}
-
-//LRU
-void lru(char s[],char F[],int l,int f)
-{
-    int i,j=0,k,m,flag=0,cnt=0,top=0;
-    printf("\n\tPAGE\t\t FAULTS");
-    for(i=0;i<l;i++)
-    {
-        for(k=0;k<f;k++)
-        {
-            if(F[k]==s[i])
-            {
-                flag=1;
-                break;
-            }
-        }
-        printf("\n\t%c\t",s[i]);
-        if(j!=f && flag!=1)
-        {
-            F[top]=s[i];
-            j++;
-            if(j!=f)
-                top++;
-        }
-        else
-        {
-            if(flag!=1)
-            {
-                for(k=0;k<top;k++)
-                    F[k]=F[k+1];
-                F[top]=s[i];
-            }
-
-            if(flag==1)
-            {
-                for(m=k;m<top;m++)
-                    F[m]=F[m+1];
-                F[top]=s[i];
-            }
-        }
-
-        if(flag==0)
-        {
-            printf("\tPage-fault%d",cnt);
-            cnt++;
-        }
-        else
-            printf("\tNo page fault");
-        flag=0;
-    }
+	 do
+	 {
+		  printf("\n Max matrix:\tAllocation matrix:\n");
+		  for(i = 0; i < p; i++)
+		  {
+		   	for( j = 0; j < r; j++)
+				printf("%d ", Max[i][j]);
+		   	printf("\t\t");
+		   	for( j = 0; j < r; j++)
+				printf("%d ", alloc[i][j]);
+		   	printf("\n");
+		  }
+		  process = -1;
+		  for(i = 0; i < p; i++)
+		  {
+		   	if(completed[i] == 0)//if not completed
+		   	{
+				process = i ;
+				for(j = 0; j < r; j++)
+				{
+					if(avail[j] < need[i][j])
+			 		{
+			  			process = -1;
+			  			break;
+			 		}
+				}
+		   	}
+		   	if(process != -1)
+				break;
+		  }
+		  if(process != -1)
+		  {
+			   printf("\nProcess %d runs to completion!", process + 1);
+			   safeSequence[count] = process + 1;
+			   count++;
+			   for(j = 0; j < r; j++)
+			   {
+					avail[j] += alloc[process][j];
+					alloc[process][j] = 0;
+					Max[process][j] = 0;
+					completed[process] = 1;
+			   }
+		  }
+	 } while(count != p && process != -1);
+	 
+	 if(count == p)
+	 {
+		printf("\nThe system is in a safe state!!\n"); 
+		printf("Safe Sequence : < "); 
+		for( i = 0; i < p; i++)
+			printf("%d ", safeSequence[i]);
+		printf(">\n");
+	 }
+	 else
+	  	printf("\nThe system is in an unsafe state!!");
 }
